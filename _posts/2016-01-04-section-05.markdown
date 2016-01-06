@@ -1,8 +1,11 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
-date:   2015-10-20 13:50:02
-categories: jekyll update
+section_id: "section5"
+title:  "Section 5"
+subheading: "Subheading will be here."
+lead_text: "Some text at length will be here."
+date:   2016-01-04 09:23:00
+categories: portfolio update
 ---
 You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
 

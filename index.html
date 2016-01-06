@@ -2,9 +2,33 @@
 layout: default
 ---
 
-<div class="home">
+<div id="site-container" class="site_container">
+  <ul id="site-scroller">
+    <li class="page-item">
+      <div id="main-menu" class="main_menu_container">
+        
+        <ul class="post-list">
+          {% for post in site.posts %}
 
-  <h1 class="page-heading">Posts</h1>
+          <li id="{{ post.section_id }}" class="menu-item">
+            <div class="section-wrapper">
+              <h1>{{ post.title }}</h1>
+              <h2>{{ post.subheading }}</h2>
+              <p>{{ post.lead_text }}</p>
+              <div class="btns">
+                  <a href="{{ post.url }}">More Information</a>
+              </div>
+            </div>
+          </li>
+
+          {% endfor %}
+        </ul>
+
+      </div>
+    </li>
+    <li class="page-item"></li>
+  </ui>
+  <!--<h1 class="page-heading">Posts</h1>
 
   <ul class="post-list">
     {% for post in site.posts %}
@@ -17,7 +41,7 @@ layout: default
       </li>
     {% endfor %}
   </ul>
-
+  
   <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-
+  -->
 </div>
