@@ -140,14 +140,16 @@
     right: 50%;
     @include transform(translateY(-50%));
 }
-    .main-nav a {
+
+.main-nav {
+    a {
         display: block;
         position: relative;
         color: transparent;
         line-height: $spacing-unit*1.25;
     }
 
-    .main-nav a:after {
+    a:after {
         content: '';
         position: absolute;
         top: 0;
@@ -157,13 +159,14 @@
         border: 2px solid $grey-color;
     }
 
-    .main-nav a:hover:after {
-        background: $grey-color;
-    }
-
-    .main-nav a.main-nav-current:after {
+    a:hover:after {
         background: $grey-color-dark;
     }
+
+    a.main-nav-current:after {
+        background: $grey-color;
+    }
+}
 
 /**
  * Site footer
