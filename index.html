@@ -1,17 +1,12 @@
 ---
 layout: default
 ---
-
-<div id="site-container" class="site_container">
-  <ul id="site-scroller">
-    <li class="page-item">
       <div id="main-menu" class="main_menu_container">
-        
-        <ul class="post-list">
-          {% for post in site.posts %}
 
+        <ul>
+          {% for post in site.posts %}
           <li id="{{ post.section_id }}" class="menu-item">
-            <div class="section-wrapper">
+            <div class="wrapper">
               <h1>{{ post.title }}</h1>
               <h2>{{ post.subheading }}</h2>
               <p>{{ post.lead_text }}</p>
@@ -20,28 +15,14 @@ layout: default
               </div>
             </div>
           </li>
-
           {% endfor %}
         </ul>
 
+      </div> <!-- end of main_menu_container -->
+      <div class="main-nav-container">
+          <nav class="main-nav">
+            {% for post in site.posts %}
+              <a href="{{ post.section_id }}">{{ post.title }}</a>
+            {% endfor %}
+          </nav>
       </div>
-    </li>
-    <li class="page-item"></li>
-  </ui>
-  <!--<h1 class="page-heading">Posts</h1>
-
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-
-        <h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </h2>
-      </li>
-    {% endfor %}
-  </ul>
-  
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-  -->
-</div>

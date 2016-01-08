@@ -3,8 +3,6 @@
  */
 .site-header {
     border-top: 5px solid $grey-color-dark;
-    border-bottom: 1px solid $grey-color-light;
-    min-height: 56px;
 
     // Positioning context for the mobile navigation icon
     position: relative;
@@ -86,14 +84,92 @@
     }
 }
 
+/**
+ * Site Container
+ */
+.loading { 
+    background: url('../img/ico_loading.gif') no-repeat center center;
+}
 
+.site_container {
+    overflow: hidden;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    @include transition(opacity 0.5s);
+}
+
+.loaded .site_container { opacity: 1; }
+
+.page-item {
+    width: 50%;
+    height: 100%;
+    display: block;
+    overflow: auto;
+    float: left;
+    position: relative;
+}
+
+/**
+ * Menu items
+ */
+.menu-item {
+    height: 640px;
+    display: block;
+    overflow: hidden;
+}
+
+/**
+ * Navigation
+ */
+.main-nav-container {
+    position: absolute;
+    top:0;
+    left:0;
+    z-index: 99999;
+}
+
+.main_menu_container {
+    position: relative;
+}
+
+.main-nav {
+    position: fixed;
+    z-index: 99999;
+    top: 50%;
+    right: 50%;
+    @include transform(translateY(-50%));
+}
+    .main-nav a {
+        display: block;
+        position: relative;
+        color: transparent;
+        line-height: $spacing-unit*1.25;
+    }
+
+    .main-nav a:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: $spacing-unit;
+        width: $spacing-unit/2;
+        height: $spacing-unit/2;
+        border: 2px solid $grey-color;
+    }
+
+    .main-nav a:hover:after {
+        background: $grey-color;
+    }
+
+    .main-nav a.main-nav-current:after {
+        background: $grey-color-dark;
+    }
 
 /**
  * Site footer
  */
 .site-footer {
-    border-top: 1px solid $grey-color-light;
-    padding: $spacing-unit 0;
+    padding: 0;
 }
 
 .footer-heading {
@@ -162,7 +238,7 @@
  * Page content
  */
 .page-content {
-    padding: $spacing-unit 0;
+    padding: 0;
 }
 
 .page-heading {
@@ -172,10 +248,6 @@
 .post-list {
     margin-left: 0;
     list-style: none;
-
-    > li {
-        margin-bottom: $spacing-unit;
-    }
 }
 
 .post-meta {

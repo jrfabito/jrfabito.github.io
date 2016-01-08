@@ -4,17 +4,45 @@
   {% include head.html %}
 
   <body class="loading">
+    <div id="site-container" class="site_container">
 
-    {% include header.html %}
+      <ul id="site-scroller">
+        <li class="page-item">
+{% include header.html %}
+{{ content }}
+        </li> <!-- main page-item -->
+        
+        <li class="page-item">
+          <div>
+              <article class="page hidden">
+                  <div class="wrapper">
+                      <h2>Title</h2>
+                      <p>We may define a food to be any substance which will repair the functional waste of the body, increase its growth, or maintain the heat, muscular, and nervous energy. </p>
+                      <p>In its most comprehensive sense, the oxygen of the air is a food; as although it is admitted by the lungs, it passes into the blood, and there re-acts upon the other food which has passed through the stomach. It is usual, however, to restrict the term food to such nutriment as enters the body by the intestinal canal. Water is often spoken of as being distinct from food, but for this there is no sufficient reason.</p>
+                      <p>We may define a food to be any substance which will repair the functional waste of the body, increase its growth, or maintain the heat, muscular, and nervous energy. </p>
+                      <p>In its most comprehensive sense, the oxygen of the air is a food; as although it is admitted by the lungs, it passes into the blood, and there re-acts upon the other food which has passed through the stomach. It is usual, however, to restrict the term food to such nutriment as enters the body by the intestinal canal. Water is often spoken of as being distinct from food, but for this there is no sufficient reason.</p>
+                      <p>We may define a food to be any substance which will repair the functional waste of the body, increase its growth, or maintain the heat, muscular, and nervous energy. </p>
+                      <p>In its most comprehensive sense, the oxygen of the air is a food; as although it is admitted by the lungs, it passes into the blood, and there re-acts upon the other food which has passed through the stomach. It is usual, however, to restrict the term food to such nutriment as enters the body by the intestinal canal. Water is often spoken of as being distinct from food, but for this there is no sufficient reason.</p>
+                      <p>We may define a food to be any substance which will repair the functional waste of the body, increase its growth, or maintain the heat, muscular, and nervous energy. </p>
+                      <p>In its most comprehensive sense, the oxygen of the air is a food; as although it is admitted by the lungs, it passes into the blood, and there re-acts upon the other food which has passed through the stomach. It is usual, however, to restrict the term food to such nutriment as enters the body by the intestinal canal. Water is often spoken of as being distinct from food, but for this there is no sufficient reason.</p>
+                      <p>We may define a food to be any substance which will repair the functional waste of the body, increase its growth, or maintain the heat, muscular, and nervous energy. </p>
+                      <p>In its most comprehensive sense, the oxygen of the air is a food; as although it is admitted by the lungs, it passes into the blood, and there re-acts upon the other food which has passed through the stomach. It is usual, however, to restrict the term food to such nutriment as enters the body by the intestinal canal. Water is often spoken of as being distinct from food, but for this there is no sufficient reason.</p>
+                  </div>
+              </article>
 
-    <div class="page-content">
-      <div class="wrapper">
-        {{ content }}
-      </div>
-    </div>
+          </div>
+        </li> <!-- detail page-item -->
 
-    {% include footer.html %}
+      </ul> <!-- end of site-scroller -->
+    </div><!-- end of site-container -->
 
+    <script src="js/TweenMax.min.js"></script>
+    <script src="js/utils/Draggable.min.js"></script>
+    <script src="js/plugins/ThrowPropsPlugin.min.js"></script>
+    <script src="js/plugins/ScrollToPlugin.min.js"></script>
+    <script src="js/noframework.waypoints.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
   </body>
 
 </html>

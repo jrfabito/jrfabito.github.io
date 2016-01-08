@@ -1,25 +1,12 @@
-var _body,_mainNavCurrent,_mainMenu,_aMenuItems,_aMainNav;
+var _body,_mainNavCurrent,_mainMenu,_aMenuItems,_aMainNav,_siteHeader;
+var _draggable,_viewportWidth,_dragStart,_isMainPage=true;
 
-function getCurrentSectionNavigationElement(){
-	for(var i=0;i<_aMainNav.length;i++){
-		var navElement = _aMainNav[i];
-		if(hasClass(navElement,_mainNavCurrent)){
-			return navElement;
-		}
-	}
-	return mainNav[0];
-}
-
-function getSectionNavigationElement(sectionName) {
-	for(var i=0;i<_aMainNav.length;i++){
-		var navElement = _aMainNav[i];
-		if(navElement.href.substr(navElement.href.lastIndexOf("#")+1,navElement.href.length)==sectionName){
-			
-			return navElement;
-		}
-	}
-	return undefined;
-}
+_body = document.querySelectorAll('body')[0];
+_mainNavCurrent = "main-nav-current";
+_mainMenu = document.getElementById("main-menu");
+_aMenuItems = document.querySelectorAll(".menu-item");
+_aMainNav = document.querySelectorAll(".main-nav a");
+_siteHeader = document.querySelectorAll(".site-header")[0];
 
 function getElementTransform(elem) {
 	var transform = /matrix\([^\)]+\)/.exec(window.getComputedStyle(elem)['-webkit-transform']),
@@ -34,13 +21,6 @@ function getElementTransform(elem) {
 	return props;
 }
 
-function changeNavigation(sectionName) {
-	var currentSection = getCurrentSectionNavigationElement();
-	removeClass(currentSection,_mainNavCurrent);
-	var nextSection = getSectionNavigationElement(sectionName);
-	addClass(nextSection,_mainNavCurrent);
-}
-
 function preventDefault(e) {
     e = e || window.event;
     if (e.preventDefault)
@@ -48,28 +28,32 @@ function preventDefault(e) {
     e.returnValue = false;
 }
 
-var _draggable,_viewportWidth,_dragStart,_isMainPage=true;
-
 function setMainPageBool(){
 	_isMainPage = getElementTransform(document.getElementById("site-scroller")).x ===0;
 }
 
+function resizeHandler(){
+	if(_aMenuItems===undefined) return;
+    document.getElementById("site-scroller").style.width = (window.innerWidth*2)+"px";
+    for(var i=0;i<_aMenuItems.length;i++){
+        var item = _aMenuItems[i];
+        item.style.width = window.innerWidth+"px";
+        item.style.height = window.innerHeight+"px";
+    }
+    _siteHeader.style.width = window.innerWidth+"px";
+    _siteHeader.style.height = window.innerHeight+"px";
+    _viewportWidth = window.innerWidth;
+}
+
+window.onresize = resizeHandler;
+
 document.addEventListener("DOMContentLoaded", function() {
 	setTimeout(function(){
-
-		_body = document.querySelectorAll('body')[0];
-		_mainNavCurrent = "main-nav-current";
-		_mainMenu = document.getElementById("main-menu");
-		_aMenuItems = document.querySelectorAll(".menu-item");
-		_aMainNav = document.querySelectorAll(".main-nav a");
-		
-		resizeHandler();
 
 		removeClass(_body,"loading");
 		addClass(_body,"loaded");
 
-		initNavigation();
-		initWaypoints();
+		resizeHandler();
 
 		_draggable = Draggable.create("#site-scroller",{
 			type:"x",
@@ -105,77 +89,4 @@ document.addEventListener("DOMContentLoaded", function() {
 	},1000);
 }, false);
 
-function resizeHandler(){
-	if(_aMenuItems===undefined) return;
-    document.getElementById("site-scroller").style.width = (window.innerWidth*2)+"px";
-    for(var i=0;i<_aMenuItems.length;i++){
-        var item = _aMenuItems[i];
-        item.style.width = window.innerWidth+"px";
-        item.style.height = window.innerHeight+"px";
-    }
-    _viewportWidth = window.innerWidth;
-}
-
-window.onresize = resizeHandler;
 resizeHandler();
-
-function scrollAnim(value)
-{
-	console.log(value);
-	TweenMax.to(_mainMenu.parentNode,0.5,{scrollTo:{y:value}});
-}
-
-function initNavigation()
-{
-	if(_aMenuItems===undefined) return;
-	function activateNav(element){
-		element.addEventListener("click",function(e){
-			var sectionName = this.href.substr(this.href.lastIndexOf("#")+1,this.href.length);
-			scrollAnim(document.getElementById(sectionName).getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
-			changeNavigation(sectionName);
-			preventDefault(e);
-		});
-	}
-
-	for(var i=0;i<_aMainNav.length;i++)
-	{
-		activateNav(_aMainNav[i]);
-	}
-}
-
-function initWaypoints()
-{
-	if(_aMenuItems===undefined) return;
-	function addWaypoint(element)
-	{
-		var id = element.id;
-		var waypointDown = new Waypoint({
-			element: element,
-			handler: function(direction)
-			{
-				if(direction=="down"){
-					changeNavigation(id);
-					// scrollAnim(element.getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
-				}
-			},
-			context: _mainMenu.parentNode,
-			offset:"25%"
-		});
-		var waypointUp = new Waypoint({
-			element: element,
-			handler: function(direction)
-			{
-				if(direction=="up"){
-					changeNavigation(id);
-					// scrollAnim(element.getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
-				}
-			},
-			context: _mainMenu.parentNode,
-			offset:"-25%"
-		});
-	}
-	for(var i=0;i<_aMenuItems.length;i++)
-	{
-		addWaypoint(_aMenuItems[i]);
-	}
-}
