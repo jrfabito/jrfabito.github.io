@@ -95,11 +95,14 @@
     overflow: hidden;
     height: 100%;
     display: block;
+}
+
+.site_scroller {
     opacity: 0;
     @include transition(opacity 0.5s);
 }
 
-.loaded .site_container { opacity: 1; }
+.loaded .site_scroller { opacity: 1; }
 
 .page-item {
     width: 50%;
