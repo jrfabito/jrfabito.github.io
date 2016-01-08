@@ -51,9 +51,34 @@ $on-laptop:        800px;
 
 @mixin transform($translate) {
     -webkit-transform: $translate;
-    -moz-transform: $translate;
-    -ms-transform: $translate;
-    transform: $translate;
+        -moz-transform: $translate;
+        -ms-transform: $translate;
+        -o-transition: $translate;
+            transform: $translate;
+}
+
+@mixin scroll-snap-points-y($scroll-snap-points-y) {
+    -webkit-scroll-snap-points-y: $scroll-snap-points-y; 
+    -moz-scroll-snap-points-y: $scroll-snap-points-y;
+    -ms-scroll-snap-points-y: $scroll-snap-points-y;
+    -o-scroll-snap-points-y: $scroll-snap-points-y;
+    scroll-snap-points-y: $scroll-snap-points-y;  
+}
+
+@mixin scroll-behavior($scroll-behavior) {
+    -webkit-scroll-behavior: $scroll-behavior; 
+    -moz-scroll-behavior: $scroll-behavior;
+    -ms-scroll-behavior: $scroll-behavior;
+    -o-scroll-behavior: $scroll-behavior;
+    scroll-behavior: $scroll-behavior;
+}
+
+@mixin scroll-snap-type($scroll-snap-type) {
+    -webkit-scroll-snap-type: $scroll-snap-type; 
+    -moz-scroll-snap-type: $scroll-snap-type;
+    -ms-scroll-snap-type: $scroll-snap-type;
+    -o-scroll-snap-type: $scroll-snap-type;
+    scroll-snap-type: $scroll-snap-type;
 }
 
 // Import partials from `sass_dir` (defaults to `_sass`)

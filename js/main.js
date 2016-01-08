@@ -1,5 +1,5 @@
-var _body,_mainNavCurrent,_mainMenu,_aMenuItems,_aMainNav,_siteHeader;
-var _draggable,_viewportWidth,_dragStart,_isMainPage=true;
+var _body,_mainNavCurrent,_mainMenu,_aMenuItems,_aMainNav,_siteHeader,
+_draggable,_viewportWidth,_dragStart,_isMainPage=true;
 
 _body = document.querySelectorAll('body')[0];
 _mainNavCurrent = "main-nav-current";
@@ -37,23 +37,116 @@ function resizeHandler(){
     document.getElementById("site-scroller").style.width = (window.innerWidth*2)+"px";
     for(var i=0;i<_aMenuItems.length;i++){
         var item = _aMenuItems[i];
-        item.style.width = window.innerWidth+"px";
+        // item.style.width = window.innerWidth+"px";
         item.style.height = window.innerHeight+"px";
     }
-    _siteHeader.style.width = window.innerWidth+"px";
+    // _siteHeader.style.width = window.innerWidth+"px";
     _siteHeader.style.height = window.innerHeight+"px";
     _viewportWidth = window.innerWidth;
 }
 
 window.onresize = resizeHandler;
 
+function scrollAnim(value)
+{
+	TweenMax.to(_mainMenu.parentNode,0.5,{scrollTo:{y:value}});
+}
+
+function getCurrentSectionNavigationElement(){
+	for(var i=0;i<_aMainNav.length;i++){
+		var navElement = _aMainNav[i];
+		if(hasClass(navElement,_mainNavCurrent)){
+			return navElement;
+		}
+	}
+	return mainNav[0];
+}
+
+function getSectionNavigationElement(sectionName) {
+	for(var i=0;i<_aMainNav.length;i++){
+		var navElement = _aMainNav[i];
+		if(navElement.href.substr(navElement.href.lastIndexOf("#")+1,navElement.href.length)==sectionName){
+			
+			return navElement;
+		}
+	}
+	return undefined;
+}
+
+function changeNavigation(sectionName) {
+	var currentSection = getCurrentSectionNavigationElement();
+	removeClass(currentSection,_mainNavCurrent);
+	var nextSection = getSectionNavigationElement(sectionName);
+	addClass(nextSection,_mainNavCurrent);
+}
+
+function initWaypoints()
+{
+	if(_aMenuItems===undefined) return;
+	function addWaypoint(element)
+	{
+		var id = element.id;
+		var waypointDown = new Waypoint({
+			element: element,
+			handler: function(direction)
+			{
+				if(direction=="down"){
+					changeNavigation(id);
+					// scrollAnim(element.getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
+				}
+			},
+			context: _mainMenu.parentNode,
+			offset:"25%"
+		});
+		var waypointUp = new Waypoint({
+			element: element,
+			handler: function(direction)
+			{
+				if(direction=="up"){
+					changeNavigation(id);
+					// scrollAnim(element.getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
+				}
+			},
+			context: _mainMenu.parentNode,
+			offset:"-25%"
+		});
+	}
+	addWaypoint(_siteHeader);
+	for(var i=0;i<_aMenuItems.length;i++)
+	{
+		addWaypoint(_aMenuItems[i]);
+	}
+}
+
+function initNavigation()
+{
+	if(_aMenuItems===undefined) return;
+	function activateNav(element){
+		element.addEventListener("click",function(e){
+			var sectionName = this.href.substr(this.href.lastIndexOf("#")+1,this.href.length);
+			scrollAnim(document.getElementById(sectionName).getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
+			changeNavigation(sectionName);
+			preventDefault(e);
+		});
+	}
+
+	for(var i=0;i<_aMainNav.length;i++)
+	{
+		activateNav(_aMainNav[i]);
+	}
+
+	initWaypoints();
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 	setTimeout(function(){
 
 		removeClass(_body,"loading");
 		addClass(_body,"loaded");
+		addClass(_aMainNav[0],"main-nav-current");
 
 		resizeHandler();
+		initNavigation();
 
 		_draggable = Draggable.create("#site-scroller",{
 			type:"x",
@@ -88,5 +181,3 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	},1000);
 }, false);
-
-resizeHandler();
