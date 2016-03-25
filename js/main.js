@@ -1,5 +1,5 @@
 var _body,_mainNavCurrent,_mainMenu,_aMenuItems,_aMainNav,_siteHeader,
-_draggable,_viewportWidth,_dragStart,_isMainPage=true;
+_draggable,_viewportWidth,_dragStart,_isMainPage=true,_detailView,_siteScroller;
 
 _body = document.querySelectorAll('body')[0];
 _mainNavCurrent = "main-nav-current";
@@ -7,6 +7,8 @@ _mainMenu = document.getElementById("main-menu");
 _aMenuItems = document.querySelectorAll(".menu-item");
 _aMainNav = document.querySelectorAll(".main-nav a");
 _siteHeader = document.querySelectorAll(".site-header")[0];
+_detailView = document.getElementById("detail-view");
+_siteScroller = document.getElementById("site-scroller");
 
 function getElementTransform(elem) {
 	var transform = /matrix\([^\)]+\)/.exec(window.getComputedStyle(elem)['-webkit-transform']),
@@ -34,15 +36,19 @@ function setMainPageBool(){
 
 function resizeHandler(){
 	if(_aMenuItems===undefined) return;
-    document.getElementById("site-scroller").style.width = (window.innerWidth*2)+"px";
+    _siteScroller.style.width = (window.innerWidth*2)+"px";
     for(var i=0;i<_aMenuItems.length;i++){
         var item = _aMenuItems[i];
-        // item.style.width = window.innerWidth+"px";
+        item.style.width = window.innerWidth+"px";
         item.style.height = window.innerHeight+"px";
     }
-    // _siteHeader.style.width = window.innerWidth+"px";
+    _siteHeader.style.width = window.innerWidth+"px";
     _siteHeader.style.height = window.innerHeight+"px";
     _viewportWidth = window.innerWidth;
+    if(!_isMainPage)
+    {
+
+    }
 }
 
 window.onresize = resizeHandler;
@@ -138,6 +144,52 @@ function initNavigation()
 	initWaypoints();
 }
 
+function requestDetailViewContent(url)
+{
+	var request = new XMLHttpRequest();
+	request.open('GET', url, true);
+	// console.log(url);
+
+	request.onload = function() {
+	  if (request.status >= 200 && request.status < 400) {
+	    // Success!
+	    var htmlData = parseHTML(request.responseText);
+	    for(var i=0;i<htmlData.length;i++)
+	    {
+	    	if(matches(htmlData[i],"#site-container"))
+	    	{
+	    		var postContent = htmlData[i].querySelectorAll("#post-container")[0];
+	    		_detailView.innerHTML = '';
+	    		_detailView.appendChild(postContent);
+	    		TweenMax.to("#site-scroller",0.35,{x:-_viewportWidth+"px",ease:Circ.easeOut,onComplete:setMainPageBool});
+	    	}
+	    }
+	  } else {
+	    // We reached our target server, but it returned an error
+	    console.log(error);
+	  }
+	};
+
+	request.onerror = function() {
+	  // There was a connection error of some sort
+	};
+
+	request.send();
+}
+
+function initMenuItems()
+{
+	var links = _mainMenu.querySelectorAll(".btns a");
+	for(var i=0;i<links.length;i++)
+	{
+		links[i].addEventListener("click",function(e){
+			requestDetailViewContent(this.href);
+			e = e || window.event;
+			e.preventDefault();
+		});
+	}
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 	setTimeout(function(){
 
@@ -147,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		resizeHandler();
 		initNavigation();
+		initMenuItems();
 
 		_draggable = Draggable.create("#site-scroller",{
 			type:"x",

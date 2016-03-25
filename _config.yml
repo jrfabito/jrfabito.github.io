@@ -12,3 +12,6 @@ github_username:  jrfabito
 
 # Build settings
 markdown: kramdown
+
+gems: [jekyll-paginate]
+paginate: 4
