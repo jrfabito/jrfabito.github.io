@@ -42,6 +42,13 @@ function addClass(element,className){
         element.className += ' ' + className;
 }
 
+function preventDefault(e) {
+    e = e || window.event;
+    if (e.preventDefault)
+    e.preventDefault();
+    e.returnValue = false;
+}
+
 function parseHTML(str) {
   var tmp = document.implementation.createHTMLDocument();
   tmp.body.innerHTML = str;
@@ -51,3 +58,26 @@ function parseHTML(str) {
 function matches(el, selector) {
   return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
 };
+
+function loadScript(url, callback){
+
+    var script = document.createElement("script")
+    script.type = "text/javascript";
+
+    if (script.readyState){  //IE
+        script.onreadystatechange = function(){
+            if (script.readyState == "loaded" ||
+                    script.readyState == "complete"){
+                script.onreadystatechange = null;
+                callback();
+            }
+        };
+    } else {  //Others
+        script.onload = function(){
+            callback();
+        };
+    }
+
+    script.src = url;
+    document.getElementsByTagName("head")[0].appendChild(script);
+}

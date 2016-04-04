@@ -9,6 +9,7 @@ _aMainNav = document.querySelectorAll(".main-nav a");
 _siteHeader = document.querySelectorAll(".site-header")[0];
 _detailView = document.getElementById("detail-view");
 _siteScroller = document.getElementById("site-scroller");
+_postsJsUrl = "/js/posts.js";
 
 function getElementTransform(elem) {
 	var transform = /matrix\([^\)]+\)/.exec(window.getComputedStyle(elem)['-webkit-transform']),
@@ -21,13 +22,6 @@ function getElementTransform(elem) {
 		props.y = parseFloat([transform[5]]);
 	}
 	return props;
-}
-
-function preventDefault(e) {
-    e = e || window.event;
-    if (e.preventDefault)
-    e.preventDefault();
-    e.returnValue = false;
 }
 
 function setMainPageBool(){
@@ -144,6 +138,34 @@ function initNavigation()
 	initWaypoints();
 }
 
+function updateDetailViewContent(htmlData,callback)
+{
+	for(var i=0;i<htmlData.length;i++)
+    {
+    	if(matches(htmlData[i],"#site-container"))
+    	{
+    		var postContent = htmlData[i].querySelectorAll("#post-container")[0];
+    		_detailView.innerHTML = '';
+    		_detailView.appendChild(postContent);
+    		addDetailViewPaginateEvents();
+    		if(callback) callback();
+    	}
+    }
+
+    document.getElementById("main-menu-link").addEventListener("click",function(e){
+    	preventDefault(e);
+    	var currentID = this.getAttribute("data-current-id");
+		TweenMax.to(_mainMenu.parentNode,0,{scrollTo:{y:document.getElementById(currentID).getBoundingClientRect().top+_mainMenu.parentNode.scrollTop}});
+		changeNavigation(currentID);
+    	switchView();
+    })
+}
+
+function switchView()
+{
+    TweenMax.to("#site-scroller",0.35,{x:_isMainPage?-_viewportWidth+"px":0,ease:Circ.easeOut,onComplete:setMainPageBool});
+}
+
 function requestDetailViewContent(url)
 {
 	var request = new XMLHttpRequest();
@@ -154,16 +176,7 @@ function requestDetailViewContent(url)
 	  if (request.status >= 200 && request.status < 400) {
 	    // Success!
 	    var htmlData = parseHTML(request.responseText);
-	    for(var i=0;i<htmlData.length;i++)
-	    {
-	    	if(matches(htmlData[i],"#site-container"))
-	    	{
-	    		var postContent = htmlData[i].querySelectorAll("#post-container")[0];
-	    		_detailView.innerHTML = '';
-	    		_detailView.appendChild(postContent);
-	    		TweenMax.to("#site-scroller",0.35,{x:-_viewportWidth+"px",ease:Circ.easeOut,onComplete:setMainPageBool});
-	    	}
-	    }
+	    updateDetailViewContent(htmlData,switchView);
 	  } else {
 	    // We reached our target server, but it returned an error
 	    console.log(error);
@@ -175,6 +188,49 @@ function requestDetailViewContent(url)
 	};
 
 	request.send();
+}
+
+function addDetailViewPaginateEvents()
+{
+	var nextPage = document.getElementById("nextPage");
+	var prevPage = document.getElementById("prevPage");
+	var request = new XMLHttpRequest();
+	var url;
+
+	if(nextPage!=null) {
+		nextPage.addEventListener("click",function(e)
+		{
+			preventDefault(e)
+			url = nextPage.href;
+			request.open('GET', url, true);
+			request.send();
+		});
+	}
+
+	if(prevPage!=null) {
+		prevPage.addEventListener("click",function(e)
+		{
+			preventDefault(e)
+			url = prevPage.href;
+			request.open('GET', url, true);
+			request.send();
+		});
+	}
+
+	request.onload = function(){
+		if(request.status>=200 && request.status<400){
+			// Success!
+		    var htmlData = parseHTML(request.responseText);
+		    updateDetailViewContent(htmlData,null);
+		}
+		else {
+			console.log(error);
+		}
+
+		request.onerror = function() {
+		  // There was a connection error of some sort
+		};
+	}
 }
 
 function initMenuItems()
