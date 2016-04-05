@@ -21,9 +21,9 @@ layout: default
       </div> <!-- end of main_menu_container -->
       <div class="main-nav-container">
           <nav class="main-nav">
-              <a href="#welcome">Welcome</a>
+              <a data-id="welcome" href="#welcome">Welcome</a>
             {% for post in site.posts %}
-              <a href="#{{ post.section_id }}">{{ post.title }}</a>
+              <a data-id="{{post.section_id}}" href="#{{ post.section_id }}">{{ post.title }}</a>
             {% endfor %}
           </nav>
       </div>

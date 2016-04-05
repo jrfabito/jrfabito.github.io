@@ -1,5 +1,5 @@
 var _body,_mainNavCurrent,_mainMenu,_aMenuItems,_aMainNav,_siteHeader,
-_draggable,_viewportWidth,_dragStart,_isMainPage=true,_detailView,_siteScroller;
+_draggable,_viewportWidth,_dragStart,_isMainPage=true,_detailView,_siteScroller,_currentID;
 
 _body = document.querySelectorAll('body')[0];
 _mainNavCurrent = "main-nav-current";
@@ -9,7 +9,6 @@ _aMainNav = document.querySelectorAll(".main-nav a");
 _siteHeader = document.querySelectorAll(".site-header")[0];
 _detailView = document.getElementById("detail-view");
 _siteScroller = document.getElementById("site-scroller");
-_postsJsUrl = "/js/posts.js";
 
 function getElementTransform(elem) {
 	var transform = /matrix\([^\)]+\)/.exec(window.getComputedStyle(elem)['-webkit-transform']),
@@ -78,6 +77,8 @@ function changeNavigation(sectionName) {
 	removeClass(currentSection,_mainNavCurrent);
 	var nextSection = getSectionNavigationElement(sectionName);
 	addClass(nextSection,_mainNavCurrent);
+	_currentID = nextSection.href.substr(nextSection.href.lastIndexOf("#")+1,nextSection.href.length);
+	// console.log("currentID: "+_currentID);
 }
 
 function initWaypoints()
@@ -92,7 +93,6 @@ function initWaypoints()
 			{
 				if(direction=="down"){
 					changeNavigation(id);
-					// scrollAnim(element.getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
 				}
 			},
 			context: _mainMenu.parentNode,
@@ -104,7 +104,6 @@ function initWaypoints()
 			{
 				if(direction=="up"){
 					changeNavigation(id);
-					// scrollAnim(element.getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
 				}
 			},
 			context: _mainMenu.parentNode,
@@ -125,7 +124,6 @@ function initNavigation()
 		element.addEventListener("click",function(e){
 			var sectionName = this.href.substr(this.href.lastIndexOf("#")+1,this.href.length);
 			scrollAnim(document.getElementById(sectionName).getBoundingClientRect().top+_mainMenu.parentNode.scrollTop);
-			changeNavigation(sectionName);
 			preventDefault(e);
 		});
 	}
@@ -154,9 +152,8 @@ function updateDetailViewContent(htmlData,callback)
 
     document.getElementById("main-menu-link").addEventListener("click",function(e){
     	preventDefault(e);
-    	var currentID = this.getAttribute("data-current-id");
-		TweenMax.to(_mainMenu.parentNode,0,{scrollTo:{y:document.getElementById(currentID).getBoundingClientRect().top+_mainMenu.parentNode.scrollTop}});
-		changeNavigation(currentID);
+    	_currentID = this.getAttribute("data-current-id");
+		TweenMax.to(_mainMenu.parentNode,0,{scrollTo:{y:document.getElementById(_currentID).getBoundingClientRect().top+_mainMenu.parentNode.scrollTop}});
     	switchView();
     })
 }
@@ -170,7 +167,7 @@ function requestDetailViewContent(url)
 {
 	var request = new XMLHttpRequest();
 	request.open('GET', url, true);
-	// console.log(url);
+	console.log(url);
 
 	request.onload = function() {
 	  if (request.status >= 200 && request.status < 400) {
@@ -196,12 +193,14 @@ function addDetailViewPaginateEvents()
 	var prevPage = document.getElementById("prevPage");
 	var request = new XMLHttpRequest();
 	var url;
+	var selectedID;
 
 	if(nextPage!=null) {
 		nextPage.addEventListener("click",function(e)
 		{
 			preventDefault(e)
 			url = nextPage.href;
+			selectedID = this.getAttribute("data-next-id");
 			request.open('GET', url, true);
 			request.send();
 		});
@@ -212,6 +211,7 @@ function addDetailViewPaginateEvents()
 		{
 			preventDefault(e)
 			url = prevPage.href;
+			selectedID = this.getAttribute("data-prev-id");
 			request.open('GET', url, true);
 			request.send();
 		});
@@ -221,6 +221,8 @@ function addDetailViewPaginateEvents()
 		if(request.status>=200 && request.status<400){
 			// Success!
 		    var htmlData = parseHTML(request.responseText);
+		    _currentID = selectedID;
+		    console.log("paginate clicked currentID:"+_currentID);
 		    updateDetailViewContent(htmlData,null);
 		}
 		else {
@@ -257,6 +259,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		initNavigation();
 		initMenuItems();
 
+		var contentToRequest;
+		var detailLinks = _mainMenu.querySelectorAll(".btns a");
+
 		_draggable = Draggable.create("#site-scroller",{
 			type:"x",
 			throwProps:true,
@@ -267,6 +272,14 @@ document.addEventListener("DOMContentLoaded", function() {
 			throwResistance:1000,
 			onDragStart: function(){
 				_dragStart = this.x;
+				for(var i=0; i<detailLinks.length; i++)
+				{
+					var dataID = detailLinks[i].getAttribute("data-id");
+					if(dataID==_currentID)
+					{
+						contentToRequest = detailLinks[i].href;
+					}
+				}
 			},
 			onDragEnd: function(){
 				var dx = _dragStart-this.x;
@@ -275,12 +288,18 @@ document.addEventListener("DOMContentLoaded", function() {
 				if(dx>0) // swipe left
 				{
 					if(dx>=threshhold)
+					{
+						requestDetailViewContent(contentToRequest);
 						tx = _isMainPage ? -_viewportWidth : 0;
+					}
 				}
 				else if (dx<0) // swipe right
 				{
 					if(dx<=-threshhold)
+					{
+						TweenMax.to(_mainMenu.parentNode,0,{scrollTo:{y:document.getElementById(_currentID).getBoundingClientRect().top+_mainMenu.parentNode.scrollTop}});
 						tx = !_isMainPage ? 0 : -_viewportWidth;
+					}
 				}
 				TweenMax.to("#site-scroller",0.35,{x:tx+"px",ease:Circ.easeOut,onComplete:setMainPageBool});
 			},
